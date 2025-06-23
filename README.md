@@ -1,6 +1,6 @@
 # DorkStart
 
-A beautiful,highly customizable startpage for your browser featuring a clean interface, multiple search engines, and dynamic visual effects including animated mandala backgrounds and golden spiral patterns.
+A beautiful,highly customizable startpage for your browser featuring a clean interface, multiple search engines, and dynamic visual effects including animated mandala backgrounds and spiral patterns.
 
 ##  Features
 
@@ -12,7 +12,7 @@ A beautiful,highly customizable startpage for your browser featuring a clean int
 
 ###  Visual Customization
 - **WebGL Mandala Art**: Animated background with customizable patterns
-- **Golden Spiral Animation**: Mathematical spiral patterns in the settings button
+- **spiral Animation**: Mathematical spiral patterns in the settings button
 - **Custom Backgrounds**: Solid colors, gradients, or upload your own images
 - **Font Selection**: Multiple font families with size controls
 - **Color Themes**: Customize text, background, and accent colors
