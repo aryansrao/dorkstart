@@ -1,0 +1,2962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="icon" id="favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js" async></script>
+  <script>
+    // Animated favicon icons with corresponding titles
+    const faviconData = [
+      {
+        icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E",
+        title: "Home"
+      },
+      {
+        icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E",
+        title: "Search"
+      }
+    ];
+
+    let currentIconIndex = 0;
+    
+    function updateFavicon() {
+      const favicon = document.getElementById('favicon') || document.querySelector('link[rel="icon"]');
+      const currentData = faviconData[currentIconIndex];
+      
+      if (favicon) {
+        favicon.href = currentData.icon;
+        document.title = currentData.title;
+        currentIconIndex = (currentIconIndex + 1) % faviconData.length;
+      }
+    }
+
+    // Start animation when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Change favicon every 2 seconds
+      setInterval(updateFavicon, 2000);
+    });
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      position: relative;
+    }
+    
+    #webgl-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      display: none;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .search-area {
+      margin-bottom: 40px;
+      height: 450px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .search-engines {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      height: 30px;
+      align-items: center;
+    }
+    
+    .engine {
+      background: transparent;
+      border: none;
+      color: #333;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      letter-spacing: 0.5px;
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+    
+    .engine:hover {
+      color: #666;
+    }
+    
+    .engine.active {
+      color: #fff;
+    }
+    
+    .search-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 20px;
+      font-family: inherit;
+      width: 100%;
+      border-bottom: 1px solid #333;
+      padding: 12px 0;
+      margin-bottom: 30px;
+      transition: border-color 0.3s ease;
+    }
+    
+    .search-input:focus {
+      border-bottom-color: #666;
+    }
+    
+    .search-input::placeholder {
+      color: #333;
+    }
+    
+    .operators {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
+      height: 280px;
+      align-content: start;
+      overflow: hidden;
+    }
+    
+    .operator {
+      background: transparent;
+      border: none;
+      color: #444;
+      font-family: inherit;
+      font-size: 13px;
+      text-align: left;
+      padding: 6px 0;
+      cursor: pointer;
+      transition: color 0.3s ease, transform 0.2s ease;
+      letter-spacing: 0.5px;
+      filter: blur(0px);
+    }
+    
+    .operator.blur-in {
+      filter: blur(3px);
+      opacity: 0.3;
+    }
+    
+    .operator:hover {
+      color: #fff;
+      transform: translateX(5px);
+    }
+    
+    .operator.active {
+      color: #888;
+    }
+    
+    .quick-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+      justify-content: center;
+    }
+    
+    .quick-link {
+      color: #333;
+      text-decoration: none;
+      font-size: 10px;
+      letter-spacing: 1px;
+      transition: color 0.3s ease;
+    }
+    
+    .quick-link:hover {
+      color: #666;
+    }
+    
+    .time {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      font-size: 16px;
+      color: #666;
+      letter-spacing: 2px;
+      font-weight: 300;
+      font-family: 'Courier New', 'SF Mono', 'Monaco', 'Consolas', monospace;
+      user-select: none;
+    }
+    
+    .time span {
+      transition: filter 0.3s ease, transform 0.3s ease;
+      display: inline-block;
+    }
+    
+    .time span.updating {
+      filter: blur(2px);
+      transform: scale(0.98);
+    }
+    
+    .settings-btn {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      background: transparent;
+      border: none;
+      color: #666;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 1px;
+      transition: color 0.3s ease;
+      padding: 0;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .spiral-container {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: blur(0.3px) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+      transition: filter 0.4s ease;
+    }
+
+    .spiral-container:hover {
+      filter: blur(0.1px) drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+    }
+
+    .spiral-container #spiral {
+      width: 50px !important;
+      height: 50px !important;
+    }
+
+    .spiral-container circle {
+      fill: #fff;
+      opacity: 0.8;
+      transition: fill 0.3s ease, opacity 0.3s ease;
+      filter: blur(0.2px) drop-shadow(0 0 2px rgba(255, 255, 255, 0.4));
+    }
+    
+    .settings-btn:hover circle {
+      fill: #fff;
+      opacity: 0.8;
+    }
+    
+    .settings-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(0px);
+      display: none;
+      z-index: 1000;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .settings-panel.show {
+      opacity: 1;
+      backdrop-filter: blur(40px);
+    }
+    
+    .settings-content {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -60%) scale(0.9);
+      width: 680px;
+      max-width: 90vw;
+      height: 520px;
+      max-height: 85vh;
+      background: rgba(8,8,8,0.7);
+      backdrop-filter: blur(60px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 24px;
+      box-shadow: 
+        0 40px 80px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(255,255,255,0.02),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      opacity: 0;
+      filter: blur(10px);
+      transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .settings-panel.show .settings-content {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      filter: blur(0px);
+    }
+    
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 32px 36px 24px 36px;
+      background: transparent;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .settings-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.04), 
+        rgba(255,255,255,0.06),
+        rgba(255,255,255,0.04),
+        transparent);
+    }
+    
+    .settings-title {
+      color: rgba(255,255,255,0.9);
+      font-size: 17px;
+      font-weight: 400;
+      margin: 0;
+      letter-spacing: -0.2px;
+    }
+    
+    .close-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 50%;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      backdrop-filter: blur(20px);
+    }
+    
+    .close-btn:hover {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.7);
+      border-color: rgba(255,255,255,0.1);
+      transform: scale(1.1);
+      backdrop-filter: blur(30px);
+    }
+    
+    .settings-body {
+      background: transparent;
+      padding: 0;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    .settings-body::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .settings-body::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.02);
+      border-radius: 4px;
+      margin: 8px 0;
+    }
+    
+    .settings-body::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1));
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .settings-body::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
+    }
+    
+    .settings-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 8px 36px 28px 36px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .settings-tab {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+      filter: blur(0px);
+    }
+    
+    .settings-tab.changing {
+      filter: blur(2px);
+      opacity: 0.5;
+    }
+    
+    .settings-tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(30px);
+      border-radius: 20px;
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    
+    .settings-tab:hover::before {
+      opacity: 1;
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.06);
+    }
+    
+    .settings-tab.active {
+      color: rgba(255,255,255,0.85);
+    }
+    
+    .settings-tab.active::before {
+      opacity: 1;
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.08);
+      backdrop-filter: blur(40px);
+    }
+    
+    .settings-tab:hover:not(.active) {
+      color: rgba(255,255,255,0.5);
+    }
+    
+    .tab-content {
+      display: none;
+      padding: 36px;
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(5px);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .tab-content.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0px);
+    }
+    
+    .section-title {
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+      font-weight: 400;
+      margin-bottom: 28px;
+      letter-spacing: -0.1px;
+      position: relative;
+      padding-bottom: 16px;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        rgba(255,255,255,0.2), 
+        rgba(255,255,255,0.05),
+        transparent);
+      border-radius: 1px;
+    }
+    
+    .engine-grid, .operator-grid {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    
+    .engine-card, .operator-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(30px);
+    }
+    
+    .engine-card::before, .operator-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at 50% 0%,
+        rgba(255,255,255,0.03) 0%,
+        transparent 50%
+      );
+      opacity: 0;
+      border-radius: 20px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .card-title {
+      color: #ccc;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .input-group {
+      margin-bottom: 12px;
+    }
+    
+    .input-label {
+      color: #666;
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: block;
+      text-transform: uppercase;
+    }
+    
+    .settings-input {
+      width: 100%;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.85);
+      padding: 16px 20px;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 400;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(20px);
+    }
+    
+    .settings-input:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(40px);
+      box-shadow: 
+        0 0 0 4px rgba(255,255,255,0.02),
+        0 8px 24px rgba(0,0,0,0.2);
+    }
+    
+    .settings-input::placeholder {
+      color: rgba(255,255,255,0.25);
+      font-weight: 300;
+    }
+    
+    .engine-inputs {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 12px;
+    }
+    
+    .operator-inputs {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px;
+    }
+    
+    .btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.6);
+      padding: 12px 20px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+      backdrop-filter: blur(20px);
+    }
+    
+    .btn-danger {
+      border-color: rgba(255, 100, 100, 0.3);
+      color: #ff6464;
+      background: rgba(255, 100, 100, 0.05);
+    }
+    
+    .btn-primary {
+      border-color: rgba(255,255,255,0.2);
+      color: #ffffff;
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .add-button {
+      width: 100%;
+      background: transparent;
+      border: 1px dashed rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.3);
+      padding: 24px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+      transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+    }
+    
+    .add-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at center,
+        rgba(255,255,255,0.02) 0%,
+        transparent 70%
+      );
+      opacity: 0;
+      transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      border-radius: 20px;
+    }
+    
+    .add-button:hover {
+      border-color: rgba(255,255,255,0.15);
+      border-style: solid;
+      background: rgba(255,255,255,0.02);
+      color: rgba(255,255,255,0.5);
+      transform: translateY(-2px);
+      backdrop-filter: blur(40px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+    
+    .add-button:hover::before {
+      opacity: 1;
+    }
+    
+    .engine-select {
+      background: transparent;
+      border: 1px solid #222;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 2px;
+      font-size: 12px;
+      margin-bottom: 20px;
+      width: 240px;
+      transition: border-color 0.3s ease;
+    }
+    
+    .engine-select:focus {
+      outline: none;
+      border-color: #444;
+    }
+    
+    .save-actions {
+      padding: 32px 36px;
+      background: transparent;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .save-actions::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.04), 
+        rgba(255,255,255,0.06),
+        rgba(255,255,255,0.04),
+        transparent);
+    }
+    
+    .save-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.8);
+      padding: 14px 28px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(30px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .save-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent);
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      border-radius: 20px;
+    }
+    
+    .save-btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.95);
+      transform: translateY(-2px);
+      backdrop-filter: blur(50px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+    }
+    
+    .save-btn:hover::before {
+      opacity: 1;
+    }
+    
+    .settings-info {
+      color: #888;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    
+    .bg-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    
+    .bg-option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      padding: 20px 24px;
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(30px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .bg-option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at 50% 0%,
+        rgba(255,255,255,0.03) 0%,
+        transparent 50%
+      );
+      opacity: 0;
+      border-radius: 20px;
+    }
+    
+    .bg-option input[type="radio"] {
+      accent-color: rgba(255,255,255,0.6);
+      width: 16px;
+      height: 16px;
+    }
+    
+    .bg-option span {
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+    }
+    
+    .bg-option input[type="radio"]:checked + span {
+      color: rgba(255,255,255,0.85);
+    }
+    
+    .bg-input {
+      margin-top: 20px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(30px);
+    }
+    
+    .upload-area {
+      position: relative;
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      background: transparent;
+      backdrop-filter: blur(20px);
+    }
+    
+    .upload-area.dragover {
+      border-color: #666;
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .upload-text {
+      color: #666;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    
+    .upload-hint {
+      color: #444;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+    
+    .bg-file-field {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    .file-selected {
+      color: #999;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      margin-top: 10px;
+    }
+    
+    .color-options {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .color-group {
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(30px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .color-group::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at 50% 0%,
+        rgba(255,255,255,0.03) 0%,
+        transparent 50%
+      );
+      opacity: 0;
+      border-radius: 20px;
+    }
+    
+    .color-label {
+      display: block;
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+      margin-bottom: 18px;
+    }
+    
+    .color-input-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .color-picker {
+      width: 44px;
+      height: 32px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      pointer-events: auto;
+      z-index: 10;
+      position: relative;
+    }
+    
+    .color-picker::-webkit-color-swatch-wrapper {
+      padding: 0;
+      border-radius: 12px;
+    }
+    
+    .color-picker::-webkit-color-swatch {
+      border: none;
+      border-radius: 1px;
+    }
+    
+    .color-text-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #333;
+      color: #fff;
+      font-size: 13px;
+      font-family: inherit;
+      padding: 8px 0;
+      width: 80px;
+      outline: none;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: border-color 0.3s ease;
+    }
+    
+    .color-text-input:focus {
+      border-bottom-color: #666;
+    }
+    
+    .color-preview {
+      color: #666;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      font-style: italic;
+    }
+    
+    .color-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+      padding-top: 20px;
+      border-top: 1px solid #222;
+    }
+    
+    .reset-colors-btn, .apply-colors-btn {
+      background: transparent;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+    
+    .reset-colors-btn:hover {
+      border-color: #666;
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .apply-colors-btn:hover {
+      border-color: #666;
+      background: rgba(255,255,255,0.05);
+    }
+    
+    /* Font Selection Styles */
+    .font-options {
+      margin: 24px 0;
+    }
+    
+    .font-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    
+    .font-option {
+      display: flex;
+      flex-direction: column;
+      padding: 20px 24px;
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(30px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .font-option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at 50% 0%,
+        rgba(255,255,255,0.03) 0%,
+        transparent 50%
+      );
+      opacity: 0;
+      border-radius: 20px;
+    }
+    
+    .font-option input[type="radio"] {
+      display: none;
+    }
+    
+    .font-option input[type="radio"]:checked + .font-name {
+      color: rgba(255,255,255,0.9);
+    }
+    
+    .font-option input[type="radio"]:checked ~ .font-preview {
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .font-option input[type="radio"]:checked {
+      & + .font-name + .font-preview {
+        color: rgba(255,255,255,0.7);
+      }
+    }
+    
+    .font-option:has(input[type="radio"]:checked) {
+      border-color: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+    }
+    
+    .font-name {
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+      margin-bottom: 10px;
+    }
+    
+    .font-preview {
+      color: rgba(255,255,255,0.4);
+      font-size: 15px;
+    }
+    
+    .font-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    
+    .reset-font-btn, .apply-font-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.6);
+      padding: 12px 20px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+      backdrop-filter: blur(20px);
+    }
+    
+    .font-size-control {
+      margin: 24px 0;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(30px);
+    }
+    
+    .font-size-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .font-size-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.6);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(20px);
+    }
+    
+    .font-size-btn:hover {
+      border-color: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.8);
+      transform: scale(1.1);
+      backdrop-filter: blur(40px);
+    }
+    
+    #fontSizeSlider {
+      flex: 1;
+      height: 2px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.08);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    
+    #fontSizeSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    #fontSizeSlider::-webkit-slider-thumb:hover {
+      background: rgba(255,255,255,0.9);
+      border-color: rgba(255,255,255,0.4);
+      transform: scale(1.2);
+    }
+    
+    #fontSizeSlider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .font-size-display {
+      text-align: center;
+    }
+    
+    #fontSizeValue {
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: -0.1px;
+    }
+
+    @media (max-width: 768px) {
+      .operators {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 4px;
+      }
+      .operator {
+        font-size: 10px;
+      }
+      .search-input {
+        font-size: 16px;
+      }
+      
+      .settings-content {
+        width: 92vw;
+        height: 88vh;
+        max-width: 480px;
+        border-radius: 20px;
+      }
+      
+      .settings-header, .settings-body, .save-actions {
+        padding: 24px 28px;
+      }
+      
+      .settings-tabs {
+        padding: 12px 28px 24px 28px;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      
+      .settings-tab {
+        font-size: 11px;
+        padding: 10px 16px;
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        border-radius: 16px;
+      }
+      
+      .settings-title {
+        font-size: 15px;
+      }
+      
+      .tab-content {
+        padding: 28px;
+      }
+      
+      .engine-inputs, .operator-inputs {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      
+      .save-actions {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+      
+      .settings-info {
+        order: 1;
+      }
+      
+      .save-btn {
+        order: 2;
+        width: 100%;
+        padding: 16px 28px;
+      }
+      
+      .add-button {
+        padding: 20px;
+        font-size: 11px;
+      }
+      
+      .font-size-control {
+        padding: 20px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+      .search-area {
+        margin-bottom: 20px;
+        height: 400px;
+      }
+      .operators {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        height: 240px;
+      }
+      
+      .settings-content {
+        width: 95vw;
+        height: 85vh;
+      }
+      
+      .settings-header {
+        padding: 15px;
+      }
+      
+      .settings-body {
+        padding: 10px 15px;
+      }
+      
+      .save-actions {
+        padding: 15px;
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .settings-tabs {
+        padding: 10px 15px 0 15px;
+        gap: 10px;
+      }
+      
+      .tab-content {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="webgl-canvas"></canvas>
+  <div class="time" id="time">
+    <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+  </div>
+  <button class="settings-btn" id="settingsBtn">
+    <div class="spiral-container">
+      <div id="spiral"></div>
+    </div>
+  </button>
+  
+  <div class="container">
+    <div class="search-area">
+      <div class="search-engines">
+        <button class="engine active" data-engine="google" data-url="https://www.google.com/search">google</button>
+        <button class="engine" data-engine="duckduckgo" data-url="https://duckduckgo.com/">duckduckgo</button>
+        <button class="engine" data-engine="bing" data-url="https://www.bing.com/search">bing</button>
+        <button class="engine" data-engine="yandex" data-url="https://yandex.com/search/">yandex</button>
+        <button class="engine" data-engine="ecosia" data-url="https://www.ecosia.org/search">ecosia</button>
+        <button class="engine" data-engine="searx" data-url="https://searx.org/search">searx</button>
+        <button class="engine" data-engine="brave" data-url="https://search.brave.com/search">brave</button>
+        <button class="engine" data-engine="kagi" data-url="https://kagi.com/search">kagi</button>
+        <button class="engine" data-engine="shodan" data-url="https://www.shodan.io/search">shodan</button>
+        <button class="engine" data-engine="github" data-url="https://github.com/search">github</button>
+      </div>
+      
+      <form action="https://www.google.com/search" method="GET" id="searchForm">
+        <input type="text" name="q" class="search-input" placeholder="search" autofocus autocomplete="off" id="searchInput" />
+      </form>
+      
+      <div class="operators" id="operators">
+        <!-- Operators will be dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-content">
+      <div class="settings-header">
+        <h2 class="settings-title">Settings & Customization</h2>
+        <button class="close-btn" id="closeSettings">×</button>
+      </div>
+      
+      <div class="settings-body">
+        <div class="settings-tabs">
+          <button class="settings-tab active" data-tab="engines">Search Engines</button>
+          <button class="settings-tab" data-tab="operators">Search Operators</button>
+          <button class="settings-tab" data-tab="background">Background</button>
+          <button class="settings-tab" data-tab="colors">Colors</button>
+          <button class="settings-tab" data-tab="fonts">Fonts</button>
+        </div>
+        
+        <div class="tab-content active" id="engines-tab">
+          <div class="section-title">Manage Search Engines</div>
+          <div class="engine-grid" id="enginesList"></div>
+          <button class="add-button" id="addEngine">+ Add New Search Engine</button>
+        </div>
+        
+        <div class="tab-content" id="operators-tab">
+          <div class="section-title">Customize Search Operators</div>
+          <select class="engine-select" id="operatorEngineSelect">
+            <option value="">Select an engine to edit</option>
+          </select>
+          <div class="operator-grid" id="operatorsList"></div>
+          <button class="add-button" id="addOperator">+ Add New Operator</button>
+        </div>
+        
+        <div class="tab-content" id="background-tab">
+          <div class="section-title">Background Settings</div>
+          <div class="bg-options">
+            <label class="bg-option">
+              <input type="radio" name="background" value="default" checked>
+              <span>Default Black</span>
+            </label>
+            
+            <label class="bg-option">
+              <input type="radio" name="background" value="mandala">
+              <span>Mandala Art</span>
+            </label>
+            
+            <label class="bg-option">
+              <input type="radio" name="background" value="upload">
+              <span>Upload Image</span>
+            </label>
+          </div>
+          
+          <div id="bg-upload-input" class="bg-input" style="display:none;">
+            <div class="upload-area" id="uploadArea">
+              <div class="upload-text">Drop image here or click to browse</div>
+              <div class="upload-hint">Supports JPG, PNG, GIF</div>
+              <input type="file" id="bgFileField" accept="image/*" class="bg-file-field">
+              <div class="file-selected" id="fileSelected" style="display:none;"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tab-content" id="colors-tab">
+          <div class="section-title">Text Colors</div>
+          <div class="color-options">
+            <div class="color-group">
+              <label class="color-label">Primary Text</label>
+              <div class="color-input-group">
+                <input type="color" id="primaryColor" value="#ffffff" class="color-picker">
+                <input type="text" id="primaryColorText" value="#ffffff" class="color-text-input">
+              </div>
+              <div class="color-preview">Search input, active engine</div>
+            </div>
+            
+            <div class="color-group">
+              <label class="color-label">Secondary Text</label>
+              <div class="color-input-group">
+                <input type="color" id="secondaryColor" value="#666666" class="color-picker">
+                <input type="text" id="secondaryColorText" value="#666666" class="color-text-input">
+              </div>
+              <div class="color-preview">Time, inactive engines</div>
+            </div>
+            
+            <div class="color-group">
+              <label class="color-label">Inactive Text</label>
+              <div class="color-input-group">
+                <input type="color" id="inactiveColor" value="#333333" class="color-picker">
+                <input type="text" id="inactiveColorText" value="#333333" class="color-text-input">
+              </div>
+              <div class="color-preview">Operators, placeholders</div>
+            </div>
+            
+            <div class="color-group">
+              <label class="color-label">Hover Text</label>
+              <div class="color-input-group">
+                <input type="color" id="hoverColor" value="#999999" class="color-picker">
+                <input type="text" id="hoverColorText" value="#999999" class="color-text-input">
+              </div>
+              <div class="color-preview">Hover states</div>
+            </div>
+          </div>
+          
+          <div class="color-actions">
+            <button class="reset-colors-btn" id="resetColors">Reset to Default</button>
+            <button class="apply-colors-btn" id="applyColors">Apply Colors</button>
+          </div>
+        </div>
+        
+        <div class="tab-content" id="fonts-tab">
+          <div class="section-title">Font Selection</div>
+          <div class="font-options">
+            <div class="font-grid">
+              <label class="font-option">
+                <input type="radio" name="fontFamily" value="mono" checked>
+                <span class="font-name">Monospace</span>
+                <span class="font-preview" style="font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;">Search Engine</span>
+              </label>
+              
+              <label class="font-option">
+                <input type="radio" name="fontFamily" value="sans">
+                <span class="font-name">Sans-serif</span>
+                <span class="font-preview" style="font-family: 'Inter', 'Helvetica Neue', 'Arial', sans-serif;">Search Engine</span>
+              </label>
+              
+              <label class="font-option">
+                <input type="radio" name="fontFamily" value="serif">
+                <span class="font-name">Serif</span>
+                <span class="font-preview" style="font-family: 'Charter', 'Times New Roman', serif;">Search Engine</span>
+              </label>
+              
+              <label class="font-option">
+                <input type="radio" name="fontFamily" value="system">
+                <span class="font-name">System</span>
+                <span class="font-preview" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui;">Search Engine</span>
+              </label>
+              
+              <label class="font-option">
+                <input type="radio" name="fontFamily" value="code">
+                <span class="font-name">Code</span>
+                <span class="font-preview" style="font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;">Search Engine</span>
+              </label>
+              
+              <label class="font-option">
+                <input type="radio" name="fontFamily" value="minimal">
+                <span class="font-name">Minimal</span>
+                <span class="font-preview" style="font-family: 'SF Pro Text', 'Helvetica Neue', sans-serif;">Search Engine</span>
+              </label>
+              
+              <label class="font-option">
+                <input type="radio" name="fontFamily" value="poppins">
+                <span class="font-name">Poppins</span>
+                <span class="font-preview" style="font-family: 'Poppins', sans-serif;">Search Engine</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="section-title">Font Size</div>
+          <div class="font-size-control">
+            <div class="font-size-slider-container">
+              <button class="font-size-btn" id="decreaseFontSize">-</button>
+              <input type="range" id="fontSizeSlider" min="12" max="24" value="16" step="1">
+              <button class="font-size-btn" id="increaseFontSize">+</button>
+            </div>
+            <div class="font-size-display">
+              <span id="fontSizeValue">16px</span>
+            </div>
+          </div>
+          
+          <div class="font-actions">
+            <button class="reset-font-btn" id="resetFont">Reset to Default</button>
+            <button class="apply-font-btn" id="applyFont">Apply Font</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="save-actions">
+        <div class="settings-info">Changes are saved locally in your browser</div>
+        <button class="save-btn" id="saveSettings">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Golden Spiral Generator
+    function createSpiral() {
+      const spiralContainer = document.getElementById('spiral');
+      if (!spiralContainer) return;
+      
+      const N = 40; // total dots (good for 50px)
+      const SIZE = 50; // SVG px (small elegant size)
+      const DOT_RADIUS = 0.8; // px (proportional dots)
+      const MARGIN = 2; // px padding
+      const DURATION = 4; // seconds per pulse cycle (slower)
+      const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // 2π/φ²
+      const CENTER = SIZE / 2;
+      const MAX_RADIUS = CENTER - MARGIN - DOT_RADIUS;
+      const svgNS = "http://www.w3.org/2000/svg";
+      
+      // Create SVG root
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("width", SIZE);
+      svg.setAttribute("height", SIZE);
+      svg.setAttribute("viewBox", `0 0 ${SIZE} ${SIZE}`);
+      spiralContainer.appendChild(svg);
+      
+      // Generate & animate dots
+      for (let i = 0; i < N; i++) {
+        const idx = i + 0.5;
+        const frac = idx / N;
+        const r = Math.sqrt(frac) * MAX_RADIUS;
+        const theta = idx * GOLDEN_ANGLE;
+        const x = CENTER + r * Math.cos(theta);
+        const y = CENTER + r * Math.sin(theta);
+        
+        // Perfect SVG circle
+        const c = document.createElementNS(svgNS, "circle");
+        c.setAttribute("cx", x);
+        c.setAttribute("cy", y);
+        c.setAttribute("r", DOT_RADIUS);
+        svg.appendChild(c);
+        
+        // Radius pulse
+        const animR = document.createElementNS(svgNS, "animate");
+        animR.setAttribute("attributeName", "r");
+        animR.setAttribute(
+          "values",
+          `${DOT_RADIUS * 0.3};${DOT_RADIUS * 1.8};${DOT_RADIUS * 0.3}`
+        );
+        animR.setAttribute("dur", `${DURATION}s`);
+        animR.setAttribute("begin", `${frac * DURATION}s`);
+        animR.setAttribute("repeatCount", "indefinite");
+        animR.setAttribute("calcMode", "spline");
+        animR.setAttribute("keySplines", "0.4 0 0.6 1;0.4 0 0.6 1");
+        c.appendChild(animR);
+        
+        // Opacity pulse
+        const animO = document.createElementNS(svgNS, "animate");
+        animO.setAttribute("attributeName", "opacity");
+        animO.setAttribute("values", "0.2;0.8;0.2");
+        animO.setAttribute("dur", `${DURATION}s`);
+        animO.setAttribute("begin", `${frac * DURATION}s`);
+        animO.setAttribute("repeatCount", "indefinite");
+        animO.setAttribute("calcMode", "spline");
+        animO.setAttribute("keySplines", "0.4 0 0.6 1;0.4 0 0.6 1");
+        c.appendChild(animO);
+      }
+    }
+
+    // WebGL Mandala Art
+    class MandalaArt {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.gl = canvas.getContext('webgl');
+        this.program = null;
+        this.time = 0;
+        this.mouse = { x: 0.5, y: 0.5 };
+        this.isRunning = false;
+        
+        if (!this.gl) {
+          console.warn('WebGL not supported');
+          return;
+        }
+        
+        this.init();
+      }
+      
+      init() {
+        const vertexShaderSource = `
+          attribute vec2 a_position;
+          varying vec2 v_uv;
+          void main() {
+            v_uv = a_position * 0.5 + 0.5;
+            gl_Position = vec4(a_position, 0.0, 1.0);
+          }
+        `;
+        
+        const fragmentShaderSource = `
+          precision highp float;
+          varying vec2 v_uv;
+          uniform float u_time;
+          uniform vec2 u_mouse;
+          uniform vec2 u_resolution;
+          
+          vec3 palette(float t) {
+            vec3 a = vec3(0.05, 0.05, 0.05);
+            vec3 b = vec3(0.05, 0.05, 0.05);
+            vec3 c = vec3(0.1, 0.1, 0.1);
+            vec3 d = vec3(0.15, 0.15, 0.15);
+            return a + b * cos(6.28318 * (c * t + d));
+          }
+          
+          void main() {
+            vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
+            vec2 uv0 = uv;
+            vec3 finalColor = vec3(0.0);
+            
+            for (float i = 0.0; i < 3.0; i++) {
+              uv = fract(uv * 1.5) - 0.5;
+              
+              float d = length(uv) * exp(-length(uv0));
+              vec3 col = palette(length(uv0) + i * 0.4 + u_time * 0.4);
+              
+              d = sin(d * 8.0 + u_time) / 8.0;
+              d = abs(d);
+              d = pow(0.01 / d, 1.2);
+              
+              finalColor += col * d;
+            }
+            
+            // Add mouse interaction (reduced intensity)
+            vec2 mousePos = u_mouse;
+            float mouseDist = length(uv0 - mousePos);
+            finalColor *= 1.0 + 0.1 * exp(-mouseDist * 3.0);
+            
+            // Significantly reduced brightness
+            finalColor *= 0.08;
+            gl_FragColor = vec4(finalColor, 1.0);
+          }
+        `;
+        
+        const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexShaderSource);
+        const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+        
+        this.program = this.createProgram(vertexShader, fragmentShader);
+        
+        // Create geometry
+        const positions = new Float32Array([
+          -1, -1,
+           1, -1,
+          -1,  1,
+          -1,  1,
+           1, -1,
+           1,  1,
+        ]);
+        
+        const positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+        
+        const positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
+        this.gl.enableVertexAttribArray(positionLocation);
+        this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+        
+        this.timeLocation = this.gl.getUniformLocation(this.program, 'u_time');
+        this.mouseLocation = this.gl.getUniformLocation(this.program, 'u_mouse');
+        this.resolutionLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
+        
+        this.resize();
+        this.setupEvents();
+      }
+      
+      createShader(type, source) {
+        const shader = this.gl.createShader(type);
+        this.gl.shaderSource(shader, source);
+        this.gl.compileShader(shader);
+        
+        if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+          console.error(this.gl.getShaderInfoLog(shader));
+          this.gl.deleteShader(shader);
+          return null;
+        }
+        
+        return shader;
+      }
+      
+      createProgram(vertexShader, fragmentShader) {
+        const program = this.gl.createProgram();
+        this.gl.attachShader(program, vertexShader);
+        this.gl.attachShader(program, fragmentShader);
+        this.gl.linkProgram(program);
+        
+        if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+          console.error(this.gl.getProgramInfoLog(program));
+          this.gl.deleteProgram(program);
+          return null;
+        }
+        
+        return program;
+      }
+      
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+      }
+      
+      setupEvents() {
+        window.addEventListener('resize', () => this.resize());
+        
+        this.canvas.addEventListener('mousemove', (e) => {
+          this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+          this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+      }
+      
+      render() {
+        if (!this.isRunning || !this.program) return;
+        
+        this.time += 0.016;
+        
+        this.gl.useProgram(this.program);
+        this.gl.uniform1f(this.timeLocation, this.time);
+        this.gl.uniform2f(this.mouseLocation, this.mouse.x, this.mouse.y);
+        this.gl.uniform2f(this.resolutionLocation, this.canvas.width, this.canvas.height);
+        
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+        
+        requestAnimationFrame(() => this.render());
+      }
+      
+      start() {
+        this.isRunning = true;
+        this.canvas.style.display = 'block';
+        this.render();
+      }
+      
+      stop() {
+        this.isRunning = false;
+        this.canvas.style.display = 'none';
+      }
+    }
+    
+    // Initialize mandala art
+    let mandalaArt = null;
+    
+    function initMandalaArt() {
+      const canvas = document.getElementById('webgl-canvas');
+      mandalaArt = new MandalaArt(canvas);
+    }
+    
+    let previousTime = { hours: '', minutes: '', seconds: '' };
+    
+    function updateTime() {
+      const now = new Date();
+      const currentTime = {
+        hours: now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit' }),
+        minutes: now.toLocaleTimeString('en-US', { minute: '2-digit' }),
+        seconds: now.toLocaleTimeString('en-US', { second: '2-digit' })
+      };
+      
+      const hoursElement = document.getElementById('hours');
+      const minutesElement = document.getElementById('minutes');
+      const secondsElement = document.getElementById('seconds');
+      
+      // Check which components have changed and apply blur effect
+      if (previousTime.hours !== currentTime.hours) {
+        updateTimeComponent(hoursElement, currentTime.hours);
+      }
+      
+      if (previousTime.minutes !== currentTime.minutes) {
+        updateTimeComponent(minutesElement, currentTime.minutes);
+      }
+      
+      if (previousTime.seconds !== currentTime.seconds) {
+        updateTimeComponent(secondsElement, currentTime.seconds);
+      }
+      
+      // Update previous time
+      previousTime = { ...currentTime };
+    }
+    
+    function updateTimeComponent(element, newValue) {
+      // Add blur effect
+      element.classList.add('updating');
+      
+      // Update value after a short delay to show the blur effect
+      setTimeout(() => {
+        element.textContent = newValue;
+        element.classList.remove('updating');
+      }, 150);
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    // Initialize the golden spiral
+    createSpiral();
+    
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+    const operators = document.querySelectorAll('.operator');
+    const engines = document.querySelectorAll('.engine');
+    
+    let currentEngine = 'google';
+    let currentUrl = 'https://www.google.com/search';
+    let currentParam = 'q';
+    
+    // Default search engines and operators (can be customized)
+    let customEngines = JSON.parse(localStorage.getItem('customEngines')) || {
+      google: { name: 'google', url: 'https://www.google.com/search' },
+      duckduckgo: { name: 'duckduckgo', url: 'https://duckduckgo.com/' },
+      bing: { name: 'bing', url: 'https://www.bing.com/search' },
+      yandex: { name: 'yandex', url: 'https://yandex.com/search/' },
+      ecosia: { name: 'ecosia', url: 'https://www.ecosia.org/search' },
+      searx: { name: 'searx', url: 'https://searx.org/search' },
+      brave: { name: 'brave', url: 'https://search.brave.com/search' },
+      kagi: { name: 'kagi', url: 'https://kagi.com/search' },
+      shodan: { name: 'shodan', url: 'https://www.shodan.io/search' },
+      github: { name: 'github', url: 'https://github.com/search' }
+    };
+    
+    // Search operators for different engines (can be customized)
+    let searchOperators = JSON.parse(localStorage.getItem('searchOperators')) || {
+      google: [
+        { op: 'site:', desc: 'site:domain.com' },
+        { op: 'filetype:', desc: 'filetype:pdf' },
+        { op: 'inurl:', desc: 'inurl:admin' },
+        { op: 'intitle:', desc: 'intitle:index of' },
+        { op: 'intext:', desc: 'intext:password' },
+        { op: 'cache:', desc: 'cache:url.com' },
+        { op: 'related:', desc: 'related:site.com' },
+        { op: 'info:', desc: 'info:domain.com' },
+        { op: 'define:', desc: 'define:word' },
+        { op: 'stocks:', desc: 'stocks:aapl' },
+        { op: 'weather:', desc: 'weather:city' },
+        { op: 'movie:', desc: 'movie:title' },
+        { op: 'map:', desc: 'map:location' },
+        { op: 'source:', desc: 'source:news' },
+        { op: 'before:', desc: 'before:2020' },
+        { op: 'after:', desc: 'after:2020' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: '*', desc: 'wild*card' },
+        { op: 'OR ', desc: 'term OR term' },
+        { op: 'AND ', desc: 'term AND term' },
+        { op: '()', desc: '( ) grouping' },
+        { op: '..', desc: 'price 10..50' },
+        { op: 'author:', desc: 'author:name' },
+        { op: 'allinurl:', desc: 'allinurl:text' },
+        { op: 'allintitle:', desc: 'allintitle:text' },
+        { op: 'allintext:', desc: 'allintext:text' },
+        { op: 'imagesize:', desc: 'imagesize:800x600' },
+        { op: 'AROUND(', desc: 'AROUND(10)' }
+      ],
+      bing: [
+        { op: 'site:', desc: 'site:domain.com' },
+        { op: 'filetype:', desc: 'filetype:pdf' },
+        { op: 'inurl:', desc: 'inurl:admin' },
+        { op: 'intitle:', desc: 'intitle:index of' },
+        { op: 'inbody:', desc: 'inbody:text' },
+        { op: 'ip:', desc: 'ip:192.168.1.1' },
+        { op: 'language:', desc: 'language:en' },
+        { op: 'loc:', desc: 'loc:US' },
+        { op: 'prefer:', desc: 'prefer:recent' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: '*', desc: 'wild*card' },
+        { op: 'OR ', desc: 'term OR term' },
+        { op: 'AND ', desc: 'term AND term' },
+        { op: '()', desc: '( ) grouping' },
+        { op: 'NEAR:', desc: 'word NEAR:5 word' }
+      ],
+      duckduckgo: [
+        { op: 'site:', desc: 'site:domain.com' },
+        { op: 'filetype:', desc: 'filetype:pdf' },
+        { op: 'intitle:', desc: 'intitle:title' },
+        { op: 'inurl:', desc: 'inurl:text' },
+        { op: 'region:', desc: 'region:us-en' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: '*', desc: 'wild*card' },
+        { op: 'OR ', desc: 'term OR term' },
+        { op: '()', desc: '( ) grouping' }
+      ],
+      yandex: [
+        { op: 'site:', desc: 'site:domain.com' },
+        { op: 'url:', desc: 'url:text' },
+        { op: 'title:', desc: 'title:text' },
+        { op: 'rhost:', desc: 'rhost:domain' },
+        { op: 'mime:', desc: 'mime:pdf' },
+        { op: 'lang:', desc: 'lang:en' },
+        { op: 'date:', desc: 'date:20200101' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: '*', desc: 'wild*card' },
+        { op: '|', desc: 'term | term' },
+        { op: '()', desc: '( ) grouping' }
+      ],
+      shodan: [
+        { op: 'port:', desc: 'port:80' },
+        { op: 'hostname:', desc: 'hostname:example.com' },
+        { op: 'org:', desc: 'org:"company name"' },
+        { op: 'city:', desc: 'city:"New York"' },
+        { op: 'country:', desc: 'country:US' },
+        { op: 'product:', desc: 'product:nginx' },
+        { op: 'version:', desc: 'version:1.0' },
+        { op: 'os:', desc: 'os:linux' },
+        { op: 'net:', desc: 'net:192.168.1.0/24' },
+        { op: 'before:', desc: 'before:01/01/2020' },
+        { op: 'after:', desc: 'after:01/01/2020' },
+        { op: 'has_screenshot:', desc: 'has_screenshot:true' },
+        { op: 'ssl:', desc: 'ssl:true' },
+        { op: 'geo:', desc: 'geo:40.7,-74.0' }
+      ],
+      github: [
+        { op: 'in:', desc: 'in:name,description' },
+        { op: 'repo:', desc: 'repo:owner/name' },
+        { op: 'user:', desc: 'user:username' },
+        { op: 'org:', desc: 'org:organization' },
+        { op: 'language:', desc: 'language:javascript' },
+        { op: 'created:', desc: 'created:>2020-01-01' },
+        { op: 'pushed:', desc: 'pushed:<2020-01-01' },
+        { op: 'size:', desc: 'size:>1000' },
+        { op: 'stars:', desc: 'stars:>100' },
+        { op: 'forks:', desc: 'forks:>10' },
+        { op: 'filename:', desc: 'filename:package.json' },
+        { op: 'extension:', desc: 'extension:js' },
+        { op: 'path:', desc: 'path:src/' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: 'NOT ', desc: 'NOT term' }
+      ],
+      ecosia: [
+        { op: 'site:', desc: 'site:domain.com' },
+        { op: 'filetype:', desc: 'filetype:pdf' },
+        { op: 'intitle:', desc: 'intitle:title' },
+        { op: 'inurl:', desc: 'inurl:text' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: '*', desc: 'wild*card' },
+        { op: 'OR ', desc: 'term OR term' },
+        { op: '()', desc: '( ) grouping' }
+      ],
+      brave: [
+        { op: 'site:', desc: 'site:domain.com' },
+        { op: 'filetype:', desc: 'filetype:pdf' },
+        { op: 'intitle:', desc: 'intitle:title' },
+        { op: 'inurl:', desc: 'inurl:text' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: '*', desc: 'wild*card' },
+        { op: 'OR ', desc: 'term OR term' },
+        { op: '()', desc: '( ) grouping' }
+      ],
+      kagi: [
+        { op: 'site:', desc: 'site:domain.com' },
+        { op: 'filetype:', desc: 'filetype:pdf' },
+        { op: 'intitle:', desc: 'intitle:title' },
+        { op: 'inurl:', desc: 'inurl:text' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: '*', desc: 'wild*card' },
+        { op: 'OR ', desc: 'term OR term' },
+        { op: '()', desc: '( ) grouping' }
+      ],
+      searx: [
+        { op: 'site:', desc: 'site:domain.com' },
+        { op: 'filetype:', desc: 'filetype:pdf' },
+        { op: 'intitle:', desc: 'intitle:title' },
+        { op: 'inurl:', desc: 'inurl:text' },
+        { op: '"', desc: '"exact phrase"' },
+        { op: '-', desc: '-exclude' },
+        { op: '*', desc: 'wild*card' },
+        { op: 'OR ', desc: 'term OR term' },
+        { op: '()', desc: '( ) grouping' }
+      ]
+    };
+    
+    // Generate search engines dynamically
+    function generateSearchEngines() {
+      const enginesContainer = document.querySelector('.search-engines');
+      enginesContainer.innerHTML = '';
+      
+      Object.keys(customEngines).forEach((engineKey, index) => {
+        const engine = customEngines[engineKey];
+        const button = document.createElement('button');
+        button.className = 'engine';
+        button.dataset.engine = engineKey;
+        button.dataset.url = engine.url;
+        button.textContent = engine.name;
+        
+        if (index === 0) button.classList.add('active');
+        
+        enginesContainer.appendChild(button);
+      });
+      
+      // Re-attach event listeners
+      attachEngineListeners();
+    }
+    
+    // Attach event listeners to engine buttons
+    function attachEngineListeners() {
+      const engines = document.querySelectorAll('.engine');
+      engines.forEach(engine => {
+        engine.addEventListener('click', () => {
+          engines.forEach(e => e.classList.remove('active'));
+          engine.classList.add('active');
+          
+          currentEngine = engine.dataset.engine;
+          currentUrl = engine.dataset.url;
+          
+          // Animate search input blur and placeholder change (if GSAP is available)
+          if (typeof gsap !== 'undefined') {
+            gsap.to(searchInput, {
+              duration: 0.15,
+              filter: 'blur(2px)',
+              ease: "power2.inOut",
+              onComplete: () => {
+                // Update form properties
+                searchForm.action = currentUrl;
+                searchInput.name = currentParam;
+                searchInput.placeholder = 'search ' + customEngines[currentEngine].name;
+                
+                // Animate back to unblurred
+                gsap.to(searchInput, {
+                  duration: 0.2,
+                  filter: 'blur(0px)',
+                  ease: "power2.out"
+                });
+              }
+            });
+          } else {
+            // Fallback: instant update without animation
+            searchForm.action = currentUrl;
+            searchInput.name = currentParam;
+            searchInput.placeholder = 'search ' + customEngines[currentEngine].name;
+          }
+          
+          updateOperators(currentEngine);
+          
+          // Set parameter name (most engines use 'q')
+          currentParam = 'q';
+          if (currentEngine === 'yandex') currentParam = 'text';
+          if (currentEngine === 'shodan') currentParam = 'query';
+        });
+      });
+    }
+    
+    // Settings panel functionality
+    function openSettings() {
+      const panel = document.getElementById('settingsPanel');
+      
+      // Show the panel first
+      panel.style.display = 'block';
+      
+      // Force a reflow to ensure display is applied
+      panel.offsetHeight;
+      
+      // Add the show class to trigger smooth animation
+      requestAnimationFrame(() => {
+        panel.classList.add('show');
+      });
+      
+      // Populate settings after a brief delay
+      setTimeout(() => {
+        populateSettings();
+      }, 100);
+    }
+    
+    function closeSettings() {
+      const panel = document.getElementById('settingsPanel');
+      
+      // Remove show class to trigger closing animation
+      panel.classList.remove('show');
+      
+      // Hide the panel after animation completes
+      setTimeout(() => {
+        panel.style.display = 'none';
+      }, 400);
+    }
+    
+    function populateSettings() {
+      populateEnginesList();
+      populateOperatorEngineSelect();
+      populateOperatorsList();
+    }
+    
+    function populateEnginesList() {
+      const container = document.getElementById('enginesList');
+      container.innerHTML = '';
+      
+      Object.keys(customEngines).forEach(engineKey => {
+        const engine = customEngines[engineKey];
+        const card = document.createElement('div');
+        card.className = 'engine-card';
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${engine.name}</div>
+            <div class="card-actions">
+              <button class="btn btn-danger" onclick="removeEngine('${engineKey}')">Remove</button>
+            </div>
+          </div>
+          <div class="engine-inputs">
+            <div class="input-group">
+              <label class="input-label">Name</label>
+              <input type="text" class="settings-input engine-name" value="${engine.name}" data-key="${engineKey}" data-field="name" placeholder="Engine name">
+            </div>
+            <div class="input-group">
+              <label class="input-label">Search URL</label>
+              <input type="text" class="settings-input engine-url" value="${engine.url}" data-key="${engineKey}" data-field="url" placeholder="https://example.com/search">
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+    
+    function populateOperatorEngineSelect() {
+      const select = document.getElementById('operatorEngineSelect');
+      select.innerHTML = '';
+      
+      Object.keys(customEngines).forEach(engineKey => {
+        const option = document.createElement('option');
+        option.value = engineKey;
+        option.textContent = customEngines[engineKey].name;
+        select.appendChild(option);
+      });
+      
+      select.addEventListener('change', populateOperatorsList);
+    }
+    
+    function populateOperatorsList() {
+      const select = document.getElementById('operatorEngineSelect');
+      const engineKey = select.value;
+      const container = document.getElementById('operatorsList');
+      container.innerHTML = '';
+      
+      if (engineKey && searchOperators[engineKey]) {
+        searchOperators[engineKey].forEach((op, index) => {
+          const card = document.createElement('div');
+          card.className = 'operator-card';
+          card.innerHTML = `
+            <div class="card-header">
+              <div class="card-title">Operator ${index + 1}</div>
+              <div class="card-actions">
+                <button class="btn btn-danger" onclick="removeOperator('${engineKey}', ${index})">Remove</button>
+              </div>
+            </div>
+            <div class="operator-inputs">
+              <div class="input-group">
+                <label class="input-label">Operator</label>
+                <input type="text" class="settings-input operator-op" value="${op.op}" data-engine="${engineKey}" data-index="${index}" data-field="op" placeholder="site:">
+              </div>
+              <div class="input-group">
+                <label class="input-label">Description</label>
+                <input type="text" class="settings-input operator-desc" value="${op.desc}" data-engine="${engineKey}" data-index="${index}" data-field="desc" placeholder="site:domain.com">
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+    }
+    
+    function addEngine() {
+      const newKey = 'engine_' + Date.now();
+      customEngines[newKey] = { name: 'New Engine', url: 'https://example.com/search' };
+      searchOperators[newKey] = [{ op: 'site:', desc: 'site:domain.com' }];
+      populateSettings();
+    }
+    
+    function removeEngine(engineKey) {
+      delete customEngines[engineKey];
+      delete searchOperators[engineKey];
+      populateSettings();
+    }
+    
+    function addOperator() {
+      const select = document.getElementById('operatorEngineSelect');
+      const engineKey = select.value;
+      if (!searchOperators[engineKey]) searchOperators[engineKey] = [];
+      searchOperators[engineKey].push({ op: 'new:', desc: 'new:operator' });
+      populateOperatorsList();
+    }
+    
+    function removeOperator(engineKey, index) {
+      searchOperators[engineKey].splice(index, 1);
+      populateOperatorsList();
+    }
+    
+    function saveSettings() {
+      // Save engine changes
+      document.querySelectorAll('.engine-card input').forEach(input => {
+        const key = input.dataset.key;
+        const field = input.dataset.field;
+        if (key && field && customEngines[key]) {
+          customEngines[key][field] = input.value;
+        }
+      });
+      
+      // Save operator changes
+      document.querySelectorAll('.operator-card input').forEach(input => {
+        const engine = input.dataset.engine;
+        const index = parseInt(input.dataset.index);
+        const field = input.dataset.field;
+        if (engine && !isNaN(index) && field && searchOperators[engine] && searchOperators[engine][index]) {
+          searchOperators[engine][index][field] = input.value;
+        }
+      });
+      
+      // Save to localStorage
+      localStorage.setItem('customEngines', JSON.stringify(customEngines));
+      localStorage.setItem('searchOperators', JSON.stringify(searchOperators));
+      
+      // Regenerate UI
+      generateSearchEngines();
+      updateOperators(currentEngine);
+      closeSettings();
+      
+      // Show success feedback
+      const saveBtn = document.getElementById('saveSettings');
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = 'Saved!';
+      saveBtn.style.background = 'linear-gradient(135deg, #2a5a2a 0%, #3a6a3a 100%)';
+      setTimeout(() => {
+        saveBtn.textContent = originalText;
+        saveBtn.style.background = '';
+      }, 1500);
+    }
+    
+    // Event listeners
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+      openSettings();
+      setTimeout(handleDragEvents, 100); // Delay to ensure elements are rendered
+    });
+    document.getElementById('closeSettings').addEventListener('click', closeSettings);
+    document.getElementById('saveSettings').addEventListener('click', saveSettings);
+    document.getElementById('addEngine').addEventListener('click', addEngine);
+    document.getElementById('addOperator').addEventListener('click', addOperator);
+    
+    // Live preview of color changes
+    function previewColors() {
+      const colors = {
+        primary: document.getElementById('primaryColor').value,
+        secondary: document.getElementById('secondaryColor').value,
+        inactive: document.getElementById('inactiveColor').value,
+        hover: document.getElementById('hoverColor').value
+      };
+      applyColors(colors);
+    }
+
+    // Tab switching functionality
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.tab;
+        
+        // Add blur effect to all tabs briefly
+        document.querySelectorAll('.settings-tab').forEach(t => {
+          t.classList.add('changing');
+        });
+        
+        setTimeout(() => {
+          // Update active tab
+          document.querySelectorAll('.settings-tab').forEach(t => {
+            t.classList.remove('active', 'changing');
+          });
+          tab.classList.add('active');
+        }, 150);
+        
+        // First blur out current content
+        const currentContent = document.querySelector('.tab-content.active');
+        if (currentContent) {
+          currentContent.style.filter = 'blur(8px)';
+          currentContent.style.opacity = '0';
+          currentContent.style.transform = 'translateY(-10px)';
+          
+          setTimeout(() => {
+            // Hide current content
+            document.querySelectorAll('.tab-content').forEach(content => {
+              content.classList.remove('active');
+              content.style.filter = 'blur(5px)';
+              content.style.opacity = '0';
+              content.style.transform = 'translateY(10px)';
+            });
+            
+            // Show new content with blur-in effect
+            const targetContent = document.getElementById(targetTab + '-tab');
+            if (targetContent) {
+              targetContent.classList.add('active');
+              
+              // Force reflow
+              targetContent.offsetHeight;
+              
+              // Animate in
+              requestAnimationFrame(() => {
+                targetContent.style.filter = 'blur(0px)';
+                targetContent.style.opacity = '1';
+                targetContent.style.transform = 'translateY(0)';
+              });
+            }
+          }, 200);
+        } else {
+          // No current content, just show new content
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          const targetContent = document.getElementById(targetTab + '-tab');
+          if (targetContent) {
+            targetContent.classList.add('active');
+          }
+        }
+        
+        // Repopulate content if switching to operators tab
+        if (targetTab === 'operators') {
+          setTimeout(() => {
+            populateOperatorEngineSelect();
+            populateOperatorsList();
+          }, 250);
+        }
+      });
+    });
+    
+    // Close settings on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSettings();
+    });
+    
+    // Keyboard shortcuts for search engines
+    document.addEventListener('keydown', (e) => {
+      // Use Ctrl key only (works on both Mac and Windows)
+      const isCtrlPressed = e.ctrlKey;
+      
+      // Prevent default behavior for our shortcuts when Ctrl is pressed
+      const shortcuts = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+      if (shortcuts.includes(e.key) && isCtrlPressed) {
+        e.preventDefault();
+      }
+      
+      const engineMap = {
+        '1': 'google',
+        '2': 'duckduckgo', 
+        '3': 'bing',
+        '4': 'yandex',
+        '5': 'ecosia',
+        '6': 'searx',
+        '7': 'brave',
+        '8': 'kagi',
+        '9': 'shodan',
+        '0': 'github'
+      };
+      
+      // Only trigger shortcuts when Ctrl key is held
+      if (isCtrlPressed) {
+        const selectedEngine = engineMap[e.key];
+        if (selectedEngine) {
+          // Find and click the corresponding engine button
+          const engineButton = document.querySelector('[data-engine="' + selectedEngine + '"]');
+          if (engineButton) {
+            engineButton.click();
+            
+            // Keep focus on search input after switching
+            setTimeout(() => {
+              searchInput.focus();
+            }, 10);
+          }
+        }
+      } else {
+        // Don't auto-focus if Ctrl key is pressed (for shortcuts)
+        if (document.activeElement !== searchInput && e.key.match(/^[a-zA-Z0-9]$/)) {
+          searchInput.focus();
+        }
+      }
+    });
+    
+    function updateOperators(engine) {
+      const operatorsContainer = document.getElementById('operators');
+      
+      // Clear container and add new operators immediately
+      operatorsContainer.innerHTML = '';
+      const operators = searchOperators[engine] || searchOperators.google;
+      
+      operators.forEach((op, index) => {
+        const button = document.createElement('button');
+        button.className = 'operator blur-in';
+        button.dataset.op = op.op;
+        button.textContent = op.desc;
+        
+        operatorsContainer.appendChild(button);
+        
+        button.addEventListener('click', () => {
+          const operator = button.dataset.op;
+          const currentValue = searchInput.value;
+          const cursorPos = searchInput.selectionStart;
+          
+          let newValue;
+          if (operator === '"') {
+            newValue = currentValue.slice(0, cursorPos) + '"' + currentValue.slice(cursorPos) + '"';
+            searchInput.value = newValue;
+            searchInput.setSelectionRange(cursorPos + 1, cursorPos + 1);
+          } else if (operator === '()') {
+            newValue = currentValue.slice(0, cursorPos) + '(' + currentValue.slice(cursorPos) + ')';
+            searchInput.value = newValue;
+            searchInput.setSelectionRange(cursorPos + 1, cursorPos + 1);
+          } else {
+            newValue = currentValue.slice(0, cursorPos) + operator + currentValue.slice(cursorPos);
+            searchInput.value = newValue;
+            searchInput.setSelectionRange(cursorPos + operator.length, cursorPos + operator.length);
+          }
+          
+          searchInput.focus();
+        });
+      });
+      
+      // Animate from blurred to unblurred with stagger (if GSAP is available)
+      if (typeof gsap !== 'undefined') {
+        gsap.to('.operator', {
+          duration: 0.4,
+          filter: 'blur(0px)',
+          opacity: 1,
+          stagger: 0.05,
+          ease: "power2.out"
+        });
+      } else {
+        // Fallback: instantly show operators without animation
+        document.querySelectorAll('.operator').forEach(op => {
+          op.style.filter = 'blur(0px)';
+          op.style.opacity = '1';
+        });
+      }
+    }
+    
+    // Color management functionality
+    const defaultColors = {
+      primary: '#ffffff',
+      secondary: '#666666',
+      inactive: '#333333',
+      hover: '#999999'
+    };
+    
+    function initializeColors() {
+      const savedColors = localStorage.getItem('customColors');
+      if (savedColors) {
+        const colors = JSON.parse(savedColors);
+        applyColors(colors);
+        updateColorUI(colors);
+      } else {
+        updateColorUI(defaultColors);
+      }
+    }
+    
+    function applyColors(colors) {
+      const root = document.documentElement;
+      root.style.setProperty('--primary-color', colors.primary);
+      root.style.setProperty('--secondary-color', colors.secondary);
+      root.style.setProperty('--inactive-color', colors.inactive);
+      root.style.setProperty('--hover-color', colors.hover);
+      
+      // Apply to specific elements
+      document.querySelectorAll('.engine.active, .search-input').forEach(el => {
+        el.style.color = colors.primary;
+      });
+      
+      document.querySelectorAll('.time, .settings-btn, .engine:not(.active)').forEach(el => {
+        el.style.color = colors.secondary;
+      });
+      
+      document.querySelectorAll('.operator, .search-input::placeholder').forEach(el => {
+        el.style.color = colors.inactive;
+      });
+      
+      // Update CSS for hover states
+      updateHoverStyles(colors);
+    }
+    
+    function updateHoverStyles(colors) {
+      let styleSheet = document.getElementById('dynamic-hover-styles');
+      if (!styleSheet) {
+        styleSheet = document.createElement('style');
+        styleSheet.id = 'dynamic-hover-styles';
+        document.head.appendChild(styleSheet);
+      }
+      
+      styleSheet.textContent = `
+        .operator:hover { color: ${colors.primary} !important; }
+        .engine:hover { color: ${colors.hover} !important; }
+        .settings-btn:hover { color: ${colors.primary} !important; }
+        .quick-link:hover { color: ${colors.hover} !important; }
+        .search-input:focus { border-bottom-color: ${colors.secondary} !important; }
+      `;
+    }
+    
+    function updateColorUI(colors) {
+      document.getElementById('primaryColor').value = colors.primary;
+      document.getElementById('primaryColorText').value = colors.primary;
+      document.getElementById('secondaryColor').value = colors.secondary;
+      document.getElementById('secondaryColorText').value = colors.secondary;
+      document.getElementById('inactiveColor').value = colors.inactive;
+      document.getElementById('inactiveColorText').value = colors.inactive;
+      document.getElementById('hoverColor').value = colors.hover;
+      document.getElementById('hoverColorText').value = colors.hover;
+    }
+    
+    function syncColorInputs(colorType) {
+      const colorPicker = document.getElementById(colorType + 'Color');
+      const colorText = document.getElementById(colorType + 'ColorText');
+      
+      colorPicker.addEventListener('input', () => {
+        colorText.value = colorPicker.value;
+      });
+      
+      colorText.addEventListener('input', () => {
+        if (/^#[0-9A-F]{6}$/i.test(colorText.value)) {
+          colorPicker.value = colorText.value;
+        }
+      });
+    }
+    
+    function applyCurrentColors() {
+      const colors = {
+        primary: document.getElementById('primaryColor').value,
+        secondary: document.getElementById('secondaryColor').value,
+        inactive: document.getElementById('inactiveColor').value,
+        hover: document.getElementById('hoverColor').value
+      };
+      
+      applyColors(colors);
+      localStorage.setItem('customColors', JSON.stringify(colors));
+      
+      // Show feedback
+      const btn = document.getElementById('applyColors');
+      const originalText = btn.textContent;
+      btn.textContent = 'Applied!';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 1500);
+    }
+    
+    function resetColors() {
+      applyColors(defaultColors);
+      updateColorUI(defaultColors);
+      localStorage.removeItem('customColors');
+      
+      // Show feedback
+      const btn = document.getElementById('resetColors');
+      const originalText = btn.textContent;
+      btn.textContent = 'Reset!';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 1500);
+    }
+    
+    // Background functionality
+    function initializeBackground() {
+      const savedBackground = localStorage.getItem('backgroundSettings');
+      if (savedBackground) {
+        const bgSettings = JSON.parse(savedBackground);
+        applyBackground(bgSettings);
+        updateBackgroundUI(bgSettings);
+      }
+    }
+    
+    function applyBackground(settings) {
+      const body = document.body;
+      
+      // Stop mandala art first
+      if (mandalaArt) {
+        mandalaArt.stop();
+      }
+      
+      switch (settings.type) {
+        case 'default':
+          body.style.backgroundImage = '';
+          body.style.backgroundColor = '#000';
+          break;
+        case 'mandala':
+          body.style.backgroundImage = '';
+          body.style.backgroundColor = '#000';
+          if (mandalaArt) {
+            mandalaArt.start();
+          }
+          break;
+        case 'upload':
+          if (settings.dataUrl) {
+            body.style.backgroundImage = `url('${settings.dataUrl}')`;
+            body.style.backgroundColor = '#000';
+          }
+          break;
+      }
+    }
+    
+    function updateBackgroundUI(settings) {
+      const radioButtons = document.querySelectorAll('input[name="background"]');
+      radioButtons.forEach(radio => {
+        if (radio.value === settings.type) {
+          radio.checked = true;
+        }
+      });
+      
+      if (settings.type === 'upload') {
+        document.getElementById('bg-upload-input').style.display = 'block';
+        if (settings.fileName) {
+          document.getElementById('fileSelected').textContent = `Selected: ${settings.fileName}`;
+          document.getElementById('fileSelected').style.display = 'block';
+        }
+      }
+    }
+    
+    function handleBackgroundChange() {
+      const selectedType = document.querySelector('input[name="background"]:checked').value;
+      
+      // Hide all input sections
+      document.getElementById('bg-upload-input').style.display = 'none';
+      
+      // Show relevant input section
+      if (selectedType === 'upload') {
+        document.getElementById('bg-upload-input').style.display = 'block';
+      }
+      
+      // Apply background immediately for default and mandala options
+      if (selectedType === 'default' || selectedType === 'mandala') {
+        const settings = { type: selectedType };
+        applyBackground(settings);
+        localStorage.setItem('backgroundSettings', JSON.stringify(settings));
+      }
+    }
+    
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const fileName = file.name;
+        document.getElementById('fileSelected').textContent = `Selected: ${fileName}`;
+        document.getElementById('fileSelected').style.display = 'block';
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const dataUrl = e.target.result;
+          const settings = { type: 'upload', dataUrl: dataUrl, fileName: fileName };
+          applyBackground(settings);
+          localStorage.setItem('backgroundSettings', JSON.stringify(settings));
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    function handleDragEvents() {
+      const uploadArea = document.getElementById('uploadArea');
+      
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+      });
+      
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+          uploadArea.classList.add('dragover');
+        });
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+          uploadArea.classList.remove('dragover');
+        });
+      });
+      
+      uploadArea.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          const file = files[0];
+          if (file.type.startsWith('image/')) {
+            // Simulate file input change
+            const fileInput = document.getElementById('bgFileField');
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+            handleFileUpload({ target: fileInput });
+          }
+        }
+      });
+    }
+    
+    // Background event listeners
+    document.querySelectorAll('input[name="background"]').forEach(radio => {
+      radio.addEventListener('change', handleBackgroundChange);
+    });
+    
+    document.getElementById('bgFileField').addEventListener('change', handleFileUpload);
+    
+    // Color event listeners - consolidated and fixed
+    function initializeColorEventListeners() {
+      console.log('Initializing color event listeners...');
+      
+      ['primary', 'secondary', 'inactive', 'hover'].forEach(colorType => {
+        const colorPicker = document.getElementById(colorType + 'Color');
+        const textInput = document.getElementById(colorType + 'ColorText');
+        
+        console.log(`Setting up ${colorType}:`, colorPicker, textInput);
+        
+        if (colorPicker && textInput) {
+          colorPicker.addEventListener('input', () => {
+            console.log(`Color picker ${colorType} changed to:`, colorPicker.value);
+            textInput.value = colorPicker.value;
+            previewColors();
+          });
+          
+          colorPicker.addEventListener('change', () => {
+            console.log(`Color picker ${colorType} change event:`, colorPicker.value);
+            textInput.value = colorPicker.value;
+            previewColors();
+          });
+          
+          textInput.addEventListener('input', () => {
+            if (/^#[0-9A-F]{6}$/i.test(textInput.value)) {
+              console.log(`Text input ${colorType} changed to:`, textInput.value);
+              colorPicker.value = textInput.value;
+              previewColors();
+            }
+          });
+        } else {
+          console.error(`Could not find color elements for ${colorType}`);
+        }
+      });
+      
+      const applyBtn = document.getElementById('applyColors');
+      const resetBtn = document.getElementById('resetColors');
+      
+      console.log('Apply/Reset buttons:', applyBtn, resetBtn);
+      
+      if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+          console.log('Apply colors clicked');
+          applyCurrentColors();
+        });
+      }
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          console.log('Reset colors clicked');
+          resetColors();
+        });
+      }
+    }
+    
+    // Font Management
+    const fontFamilies = {
+      mono: "'SF Mono', 'Monaco', 'Consolas', monospace",
+      sans: "'Inter', 'Helvetica Neue', 'Arial', sans-serif",
+      serif: "'Charter', 'Times New Roman', serif",
+      system: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui",
+      code: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+      minimal: "'SF Pro Text', 'Helvetica Neue', sans-serif",
+      poppins: "'Poppins', sans-serif"
+    };
+    
+    function initializeFonts() {
+      const savedFont = localStorage.getItem('selectedFont') || 'mono';
+      const fontRadio = document.querySelector(`input[name="fontFamily"][value="${savedFont}"]`);
+      if (fontRadio) {
+        fontRadio.checked = true;
+      }
+      applyFont(savedFont);
+    }
+    
+    function applyFont(fontKey) {
+      const fontFamily = fontFamilies[fontKey];
+      if (!fontFamily) return;
+      
+      // Apply to body (affects all inherit elements)
+      document.body.style.fontFamily = fontFamily;
+      
+      // Store the selection
+      localStorage.setItem('selectedFont', fontKey);
+    }
+    
+    function resetFont() {
+      const defaultFont = 'mono';
+      const fontRadio = document.querySelector(`input[name="fontFamily"][value="${defaultFont}"]`);
+      if (fontRadio) {
+        fontRadio.checked = true;
+      }
+      applyFont(defaultFont);
+    }
+    
+    function applyCurrentFont() {
+      const selectedFont = document.querySelector('input[name="fontFamily"]:checked');
+      if (selectedFont) {
+        applyFont(selectedFont.value);
+      }
+    }
+    
+    // Font event listeners
+    document.getElementById('applyFont').addEventListener('click', applyCurrentFont);
+    document.getElementById('resetFont').addEventListener('click', resetFont);
+    
+    // Live preview for font selection
+    document.querySelectorAll('input[name="fontFamily"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        if (this.checked) {
+          applyFont(this.value);
+        }
+      });
+    });
+    
+    // Font Size Management
+    function initializeFontSize() {
+      const savedFontSize = localStorage.getItem('selectedFontSize') || '16';
+      const slider = document.getElementById('fontSizeSlider');
+      const display = document.getElementById('fontSizeValue');
+      
+      slider.value = savedFontSize;
+      display.textContent = savedFontSize + 'px';
+      applyFontSize(parseInt(savedFontSize));
+    }
+    
+    function applyFontSize(size) {
+      // Store the base font size
+      const baseFontSize = size;
+      
+      // Apply base font size to body
+      document.body.style.fontSize = baseFontSize + 'px';
+      
+      // Define specific size mappings for key elements
+      const sizeMap = {
+        '.search-input': Math.round(baseFontSize * 1.25), // 20px at base 16px
+        '.engine-selector': Math.round(baseFontSize * 0.8125), // 13px at base 16px
+        '.operator': Math.round(baseFontSize * 0.8125), // 13px at base 16px
+        '.clock': Math.round(baseFontSize * 1.0), // 16px at base 16px
+        '.section-title': Math.round(baseFontSize * 1.0), // 16px at base 16px
+        '.tab-button': Math.round(baseFontSize * 1.0), // 16px at base 16px
+        '.settings-tab': Math.round(baseFontSize * 1.0), // 16px at base 16px
+        '.font-name': Math.round(baseFontSize * 0.75), // 12px at base 16px
+        '.font-preview': Math.round(baseFontSize * 1.0), // 16px at base 16px
+        '#fontSizeValue': Math.round(baseFontSize * 0.75) // 12px at base 16px
+      };
+      
+      // Apply the mapped sizes
+      Object.entries(sizeMap).forEach(([selector, fontSize]) => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+          element.style.fontSize = fontSize + 'px';
+        });
+      });
+      
+      // Store the selection
+      localStorage.setItem('selectedFontSize', size.toString());
+      
+      // Update display
+      document.getElementById('fontSizeValue').textContent = size + 'px';
+    }
+    
+    function increaseFontSize() {
+      const slider = document.getElementById('fontSizeSlider');
+      const currentSize = parseInt(slider.value);
+      const newSize = Math.min(24, currentSize + 1);
+      slider.value = newSize;
+      applyFontSize(newSize);
+    }
+    
+    function decreaseFontSize() {
+      const slider = document.getElementById('fontSizeSlider');
+      const currentSize = parseInt(slider.value);
+      const newSize = Math.max(12, currentSize - 1);
+      slider.value = newSize;
+      applyFontSize(newSize);
+    }
+    
+    function resetFontSize() {
+      const defaultSize = 16;
+      document.getElementById('fontSizeSlider').value = defaultSize;
+      applyFontSize(defaultSize);
+    }
+    
+    // Font size event listeners
+    document.getElementById('fontSizeSlider').addEventListener('input', function() {
+      applyFontSize(parseInt(this.value));
+    });
+    
+    document.getElementById('increaseFontSize').addEventListener('click', increaseFontSize);
+    document.getElementById('decreaseFontSize').addEventListener('click', decreaseFontSize);
+    
+    // Update the reset font function to also reset font size
+    function resetFont() {
+      const defaultFont = 'mono';
+      const fontRadio = document.querySelector(`input[name="fontFamily"][value="${defaultFont}"]`);
+      if (fontRadio) {
+        fontRadio.checked = true;
+      }
+      applyFont(defaultFont);
+      resetFontSize();
+    }
+
+    // Initialize with Google operators and generate engines
+    generateSearchEngines();
+    updateOperators('google');
+    initializeBackground();
+    initializeColors();
+    initializeColorEventListeners();
+    initializeFonts();
+    initializeFontSize();
+    
+    // Initialize mandala art after a short delay to improve initial load
+    setTimeout(() => {
+      initMandalaArt();
+    }, 100);
+  </script>
+</body>
+</html>
